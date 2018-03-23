@@ -73,3 +73,46 @@
     command. You can read more about strftime at:
     (https://github.com/samsonjs/strftime) */
 
+var net = require('net');
+
+var server = net.createServer(function(socket) {
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = add0(date.getMonth() + 1);
+    var day = add0(date.getDate());
+    var hours = add0(date.getHours());
+    var minutes = add0(date.getMinutes());
+    var dateString = (year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + '\n');
+    socket.end(dateString);
+})
+
+function add0(x) {
+    return (x<10 ? '0' + x : x);
+}
+
+server.listen(process.argv[2]);
+
+/*  Here's the official solution in case you want to compare notes:
+
+─────────────────────────────────────────────────────────────────────────────
+
+    var net = require('net')
+
+    function zeroFill (i) {
+      return (i < 10 ? '0' : '') + i
+    }
+
+    function now () {
+      var d = new Date()
+      return d.getFullYear() + '-' +
+        zeroFill(d.getMonth() + 1) + '-' +
+        zeroFill(d.getDate()) + ' ' +
+        zeroFill(d.getHours()) + ':' +
+        zeroFill(d.getMinutes())
+    }
+
+    var server = net.createServer(function (socket) {
+      socket.end(now() + '\n')
+    })
+
+    server.listen(Number(process.argv[2])) */

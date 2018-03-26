@@ -57,3 +57,11 @@
     Date().toISOString(). It can also parse this format if you pass the string
     into the Date constructor. Date.getTime() will also come in handy. */
 
+var http = require('http');
+var port = process.argv[2];
+
+var server = http.createServer(function(request, response) {
+    response.writeHead(200, {'Content-Type': 'application/json'});
+});
+
+server.listen(port);

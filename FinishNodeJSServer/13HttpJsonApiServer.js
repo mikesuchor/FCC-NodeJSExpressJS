@@ -58,10 +58,71 @@
     into the Date constructor. Date.getTime() will also come in handy. */
 
 var http = require('http');
+var url = require('url');
 var port = process.argv[2];
 
 var server = http.createServer(function(request, response) {
-    response.writeHead(200, {'Content-Type': 'application/json'});
+    if(request.method==='GET') {
+        response.writeHead(200, {'Content-Type': 'application/json'});
+        url = url.parse(request.url, true);
+        if(url.pathname === '/api/parsetime') {
+            var currentDate = new Date(url.query.iso);
+            var currentTime = {
+                hour: currentDate.getHours(),
+                minute: currentDate.getMinutes(),
+                second: currentDate.getSeconds()
+            }
+            response.end(JSON.stringify(currentTime));
+        }
+        else if(url.pathname === '/api/unixtime') {
+            var currentDate = new Date(url.query.iso);
+            var unixTime = {
+                unixtime: currentDate.getTime()
+            }
+            response.end(JSON.stringify(unixTime));
+        }
+    } 
 });
 
 server.listen(port);
+
+/*  Here's the official solution in case you want to compare notes:
+
+─────────────────────────────────────────────────────────────────────────────
+
+    var http = require('http')
+    var url = require('url')
+
+    function parsetime (time) {
+        return {
+            hour: time.getHours(),
+            minute: time.getMinutes(),
+            second: time.getSeconds()
+        }
+    }
+
+    function unixtime (time) {
+        return { unixtime: time.getTime() }
+    }
+
+    var server = http.createServer(function (req, res) {
+        var parsedUrl = url.parse(req.url, true)
+        var time = new Date(parsedUrl.query.iso)
+        var result
+
+        if (/^\/api\/parsetime/.test(req.url)) {
+            result = parsetime(time)
+        } else if (/^\/api\/unixtime/.test(req.url)) {
+            result = unixtime(time)
+        }
+
+        if (result) {
+            res.writeHead(200, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify(result))
+        } else {
+            res.writeHead(404)
+            res.end()
+        }
+    })
+    
+    server.listen(Number(process.argv[2])) */

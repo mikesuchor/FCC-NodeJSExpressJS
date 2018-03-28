@@ -53,12 +53,14 @@
     If you receive Error: Cannot find module 'pug', it is because Express is looking for Pug relative to its path. You can fix this by running npm install pug. */
 
 var express = require('express');
+var path = require('path');
 var app = express();
 
-app.set('views', process.argv[3]);
+app.set('view engine', 'pug');
+app.set('views', (process.argv[3] || path.join(__dirname, 'templates')));
 
 app.get('/home', function(request, response) {
-    response.render('views', {date: new Date().toDateString()});
+    response.render('index', {date: new Date().toDateString()});
 });
 
 app.listen(process.argv[2]);
